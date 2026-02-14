@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Greetings</title>
+    <link rel="icon" type="image/jpg" href="me.jpg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Calibri', sans-serif; background-color: #ffebf0; padding: 20px; }
+        .header { text-align: center; margin-bottom: 20px; font-family: 'Great Vibes', cursive; }
+        .header h1 { font-size: 3rem; color: #dc3545; }
+        .container-custom { max-width: 900px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
+        .comment { background: #ffe6ea; padding: 12px; margin-top: 10px; border-radius: 8px; border-left: 5px solid #d63384; text-align: left; }
+        .footer { text-align: center; margin-top: 30px; color: #d63384; font-weight: bold; }
+        #comments { max-height: 450px; overflow-y: auto; padding-right: 5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Happy Heart's Day! 💖</h1>
+        <p>From me to you. <br>- JM Baldera</p>
+    </div>
+    
+    <div class="container container-custom">
+        <div class="row">
+            <div class="col-md-5 order-md-2 text-center mb-4">
+                <div class="card p-3 shadow-sm">
+                    <h5 class="mb-3">Leave a Message</h5>
+                    <input type="text" id="nameBox" class="form-control mb-2" placeholder="Your name...">
+                    <textarea id="commentBox" class="form-control mb-3" rows="3" placeholder="Write something sweet..."></textarea>
+                    <button id="submitBtn" class="btn btn-danger w-100" onclick="submitComment()">Send Love 💌</button>
+                </div>
+                <hr>
+                <h6 class="text-muted">RECENT MESSAGES</h6>
+                <div id="comments" class="mt-2">Loading...</div>
+            </div>
+
+            <div class="col-md-7 order-md-1">
+                <h3 class="text-danger">God’s Love for Us</h3>
+                <p>❤️ <strong>Romans 5:8</strong> – "But God demonstrates his own love for us in this: While we were still sinners, Christ died for us."</p>
+                <p>❤️ <strong>1 John 4:19</strong> – "We love because he first loved us."</p>
+                
+                <h3 class="text-danger mt-4">Love in Relationships</h3>
+                <p>💑 <strong>1 Corinthians 13:4-7</strong> – "Love is patient, love is kind. It does not envy, it does not boast, it is not proud..."</p>
+                <p>💑 <strong>Colossians 3:14</strong> – "And over all these virtues put on love, which binds them all together in perfect unity."</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">- JM Baldera @2026</div>
+
+    <script>
+        // PASTE YOUR GOOGLE WEB APP URL HERE
+        const scriptURL = "https://script.google.com/macros/s/AKfycby5-gbBXMSeu6Mr-XNsx8padds5cmvEzVRDrSORenH2t5wAuVE2bqVvWSaUpEBzkO1DRg/exec";
+    
+        async function loadComments() {
+            try {
+                const response = await fetch(scriptURL);
+                const messages = await response.json();
+                const commentsDiv = document.getElementById("comments");
+                commentsDiv.innerHTML = "";
+                
+                if (!messages || messages.length === 0) {
+                    commentsDiv.innerHTML = "<p class='text-muted small'>No messages yet.</p>";
+                    return;
+                }
+
+                // Show newest first
+                messages.reverse().forEach(msg => {
+                    const time = msg.time ? new Date(msg.time).toLocaleDateString() : 'Recently';
+                    commentsDiv.innerHTML += `
+                        <div class="comment">
+                            <strong>${msg.name}</strong> <small class="text-muted float-end">${time}</small><br>
+                            <span>${msg.message}</span>
+                        </div>`;
+                });
+            } catch (e) {
+                document.getElementById("comments").innerHTML = "Couldn't load messages.";
+            }
+        }
+    
+        function submitComment() {
+            const name = document.getElementById("nameBox").value.trim();
+            const message = document.getElementById("commentBox").value.trim();
+            const btn = document.getElementById("submitBtn");
+
+            if (!name || !message) return alert("Fill in both boxes!");
+
+            btn.disabled = true;
+            btn.innerText = "Sending...";
+
+            fetch(scriptURL, {
+                method: "POST",
+                body: JSON.stringify({ name, message })
+            })
+            .then(() => {
+                document.getElementById("nameBox").value = "";
+                document.getElementById("commentBox").value = "";
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerText = "Send Love 💌";
+                    loadComments();
+                }, 1500);
+            })
+            .catch(() => {
+                alert("Error sending message.");
+                btn.disabled = false;
+            });
+        }
+    
+        document.addEventListener("DOMContentLoaded", loadComments);
+    </script>
+</body>
+</html>
